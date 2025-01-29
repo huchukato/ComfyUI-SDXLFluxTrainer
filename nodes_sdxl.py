@@ -28,7 +28,7 @@ class SDXLModelSelect:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-                    "checkpoint": (folder_paths.get_filename_list("checkpoints"), ),
+                    "checkpoint": ("STRING",{"multiline": False, "default": "stabilityai/stable-diffusion-xl-base-1.0", "tooltip": "pretrained model name or path"}),
                 },
                 "optional": {
                     "lora_path": ("STRING",{"multiline": True, "forceInput": True, "default": "", "tooltip": "pre-trained LoRA path to load (network_weights)"}),
@@ -60,10 +60,11 @@ class InitSDXLLoRATraining:
             "optimizer_settings": ("ARGS",),
             "output_name": ("STRING", {"default": "SDXL_lora", "multiline": False}),
             "output_dir": ("STRING", {"default": "SDXL_trainer_output", "multiline": False, "tooltip": "path to dataset, root is the 'ComfyUI' folder, with windows portable 'ComfyUI_windows_portable'"}),
-            "network_dim": ("INT", {"default": 16, "min": 1, "max": 100000, "step": 1, "tooltip": "network dim"}),
-            "network_alpha": ("FLOAT", {"default": 16, "min": 0.0, "max": 2048.0, "step": 0.01, "tooltip": "network alpha"}),
+            "network_dim": ("INT", {"default": 32, "min": 1, "max": 2048, "step": 1, "tooltip": "network dim"}),
+            "network_alpha": ("FLOAT", {"default": 16, "min": 0, "max": 2048, "step": 1, "tooltip": "network alpha"}),
             "learning_rate": ("FLOAT", {"default": 1e-6, "min": 0.0, "max": 10.0, "step": 0.0000001, "tooltip": "learning rate"}),
             "max_train_steps": ("INT", {"default": 1500, "min": 1, "max": 100000, "step": 1, "tooltip": "max number of training steps"}),
+            "max_train_epoch": ("INT", {"default": 20, "min": 0, "max": 10000, "step": 1, "tooltip": "max number of epoch"}),
             "cache_latents": (["disk", "memory", "disabled"], {"tooltip": "caches text encoder outputs"}),
             "cache_text_encoder_outputs": (["disk", "memory", "disabled"], {"tooltip": "caches text encoder outputs"}),
             "highvram": ("BOOLEAN", {"default": False, "tooltip": "memory mode"}),
@@ -386,10 +387,10 @@ class SDXLTrainValidationSettings:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
-            "steps": ("INT", {"default": 20, "min": 1, "max": 256, "step": 1, "tooltip": "sampling steps"}),
+            "steps": ("INT", {"default": 30, "min": 1, "max": 256, "step": 1, "tooltip": "sampling steps"}),
             "width": ("INT", {"default": 1024, "min": 64, "max": 4096, "step": 8, "tooltip": "image width"}),
             "height": ("INT", {"default": 1024, "min": 64, "max": 4096, "step": 8, "tooltip": "image height"}),
-            "guidance_scale": ("FLOAT", {"default": 7.5, "min": 1.0, "max": 32.0, "step": 0.05, "tooltip": "guidance scale"}),
+            "guidance_scale": ("FLOAT", {"default": 6, "min": 1.0, "max": 32.0, "step": 0.05, "tooltip": "guidance scale"}),
             "sampler": (["ddim", "ddpm", "pndm", "lms", "euler", "euler_a", "dpmsolver", "dpmsingle", "heun", "dpm_2", "dpm_2_a",], {"default": "dpm_2", "tooltip": "sampler"}),
             "seed": ("INT", {"default": 42,"min": 0, "max": 0xffffffffffffffff, "step": 1}),
             },
